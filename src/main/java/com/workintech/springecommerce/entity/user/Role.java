@@ -14,7 +14,6 @@ import org.springframework.security.core.GrantedAuthority;
 @Entity
 @Table(name = "role", schema = "ecommerce")
 public class Role implements GrantedAuthority {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")

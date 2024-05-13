@@ -1,4 +1,4 @@
 package com.workintech.springecommerce.entity;
 
-public class Category {
+public class Category{
 }

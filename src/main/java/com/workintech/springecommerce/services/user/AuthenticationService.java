@@ -21,7 +21,6 @@ public class AuthenticationService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-
     public  User register(String fullName, String email, String password, Long roleId) {
         String encodedPassword = passwordEncoder.encode(password);
         Optional<Role> optionalRole = roleRepository.findById(roleId);

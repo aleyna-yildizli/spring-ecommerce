@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @CrossOrigin("http://localhost:5173")
 public class RegisterController {
-
     private AuthenticationService authenticationService;
-
     @PostMapping
     public RegisterResponse register(@RequestBody RegisterRequest registerRequest) {
        User createdUser =  authenticationService

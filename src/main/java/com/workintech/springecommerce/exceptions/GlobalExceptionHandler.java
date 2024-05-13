@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @AllArgsConstructor
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleException(EcommerceException exception) {
         log.error("EcommerceException occured! Exception details: ", exception.getLocalizedMessage());
