@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin("http://localhost:5173")
 public class RegisterController {
     private AuthenticationService authenticationService;
-    @PostMapping
+    @PostMapping()
     public RegisterResponse register(@RequestBody RegisterRequest registerRequest) {
        User createdUser =  authenticationService
                 .register(registerRequest.name(), registerRequest.email(), registerRequest.password(), registerRequest.role_id());
         return new RegisterResponse(createdUser.getEmail(), "Registration successful.");
     }
-
 }

@@ -1,16 +1,18 @@
 package com.workintech.springecommerce.services.user;
 
+import com.workintech.springecommerce.DtoConverter.user.UserConverter;
+import com.workintech.springecommerce.dto.LoginResponse;
 import com.workintech.springecommerce.entity.user.Role;
 import com.workintech.springecommerce.entity.user.User;
-import com.workintech.springecommerce.repository.RoleRepository;
-import com.workintech.springecommerce.repository.UserRepository;
+import com.workintech.springecommerce.repository.user.RoleRepository;
+import com.workintech.springecommerce.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -41,11 +43,21 @@ public class AuthenticationService {
 
         return userRepository.save(user);
     }
+
+    public LoginResponse login(String email, String password) {
+        // Kullanıcıyı e-posta adresine göre bul
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Kullanıcının parolasını doğrula
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        // Kullanıcının bilgilerini döndür
+        return UserConverter.convertToUserResponse(user);
+    }
 }
-
-
-
-
 
 
 

@@ -1,4 +1,4 @@
-package com.workintech.springecommerce.repository;
+package com.workintech.springecommerce.repository.user;
 
 import com.workintech.springecommerce.entity.user.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
