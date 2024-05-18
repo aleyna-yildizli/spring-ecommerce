@@ -22,8 +22,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import java.util.Arrays;
 import java.util.List;
 
-//authentication-> login
-//authorization-> yetkilendirme-rol based
+//authentication-> login status code: 401 ise authentication
+//authorization-> yetkilendirme-rol based status code 403
 @Configuration
 public class SecurityConfig {
     @Bean
@@ -42,7 +42,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(Arrays.asList("*"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         corsConfiguration.setAllowedHeaders(Arrays.asList(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -60,18 +60,11 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.POST,"/login/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET,"/categories/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET,"/products/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET,"/user/address**").permitAll();
+                    auth.requestMatchers(HttpMethod.POST,"/user/address**").permitAll();
                     auth.requestMatchers("/css/**", "/js/**", "/images/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
-                .formLogin(formLogin -> formLogin
-                        .loginPage("/login") // Özel login sayfasını belirt
-                        .permitAll() // Herkese login sayfasına erişim izni ver
-                        .loginProcessingUrl("http://localhost:5173/login") // Giriş işlemini gerçekleştirecek URL
-                        .defaultSuccessUrl("/", true) // Başarılı giriş sonrası yönlendirilecek URL
-                        .failureUrl("/") // Hatalı giriş sonrası yönlendirilecek URL
-                        .usernameParameter("email") // Kullanıcı adı parametresi
-                        .passwordParameter("password") // Parola parametresi
-                )
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }

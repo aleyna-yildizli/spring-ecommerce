@@ -4,10 +4,16 @@ import com.workintech.springecommerce.DtoConverter.user.UserConverter;
 import com.workintech.springecommerce.dto.LoginResponse;
 import com.workintech.springecommerce.entity.user.Role;
 import com.workintech.springecommerce.entity.user.User;
+import com.workintech.springecommerce.exceptions.EcommerceException;
 import com.workintech.springecommerce.repository.user.RoleRepository;
 import com.workintech.springecommerce.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,11 +23,18 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-@AllArgsConstructor
 public class AuthenticationService {
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
+    private UserRepository userRepository;
+    private RoleRepository roleRepository;
+    private PasswordEncoder passwordEncoder;
+    private AuthenticationManager authenticationManager;
+
+    public AuthenticationService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+    }
 
     public  User register(String fullName, String email, String password, Long roleId) {
         String encodedPassword = passwordEncoder.encode(password);
@@ -44,18 +57,19 @@ public class AuthenticationService {
         return userRepository.save(user);
     }
 
-    public LoginResponse login(String email, String password) {
-        // Kullanıcıyı e-posta adresine göre bul
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public LoginResponse authenticate(String email, String password) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
 
-        // Kullanıcının parolasını doğrula
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new BadCredentialsException("Invalid password");
+        if (authentication.isAuthenticated()) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User user = userRepository.findUserByEmail(email).orElseThrow();
+            Role userRole = user.getRoles().iterator().next(); // Kullanıcının ilk rolünü alıyoruz
+            return new LoginResponse(user.getEmail(), user.getName(), userRole.getId().toString());
+        } else {
+            throw new EcommerceException("Invalid login attempt", HttpStatus.UNAUTHORIZED); //geçersiz login
         }
-
-        // Kullanıcının bilgilerini döndür
-        return UserConverter.convertToUserResponse(user);
     }
 }
 

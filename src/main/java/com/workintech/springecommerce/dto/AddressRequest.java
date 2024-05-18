@@ -1,0 +1,6 @@
+package com.workintech.springecommerce.dto;
+
+import com.workintech.springecommerce.entity.user.Address;
+
+public record AddressRequest(Long user_id, Address address) {
+}

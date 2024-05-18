@@ -31,23 +31,28 @@ public class User implements UserDetails {
     private String name;
 
     @Column(name="email")
-    @NotNull(message = "Email can not be null")
-    @NotEmpty(message = "Email can not be empty")
-    @Size(min=10, message="Length of email can not be greater than 10 characters" )
+    @NotBlank(message = "Email must not be null, empty or blank")
+    @Size(min=10, max=50, message="Length of email must be between 10 and 50 characters")
     private String email;
 
+
     @Column(name="password")
-    @NotNull(message = "Password can not be null")
-    @NotEmpty(message = "Email can not be empty")
-    @Size(min = 8, message = "Length of email can not be less than 8 characters")
+    @NotBlank(message = "Password must not be null, empty or blank")
+    @Size(min = 8, max=100, message = "Length of password must be between 8 and 100 characters")
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER) //userla birlikte rolleri de getirmek için
-    // Rollere göre yetkilendirmek için.
-    @JoinTable(name="user_role", schema="ecommerce",
+    @JoinTable(name="user_role", schema="ecommerce",    // Rollere göre yetkilendirmek için
             joinColumns = @JoinColumn(name="user_id"),
             inverseJoinColumns = @JoinColumn(name="role_id"))
     private Set<Role> roles = new HashSet<>();
+
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name="user_addresses", schema="ecommerce",
+            joinColumns = @JoinColumn(name="user_id"),
+            inverseJoinColumns = @JoinColumn(name="address_id"))
+    private Set<Address> addresses = new HashSet<>();
 
 
     @Override

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class LoginService implements UserDetailsService {
+
     private UserRepository userRepository;
 
     @Override

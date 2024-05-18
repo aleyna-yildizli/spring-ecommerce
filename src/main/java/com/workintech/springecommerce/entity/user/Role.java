@@ -19,10 +19,8 @@ public class Role implements GrantedAuthority {
     @Column(name="id")
     private Long id;
 
-
     @Column(name = "name")
     private String name;
-
 
     @Column(name = "code")
     private String code;

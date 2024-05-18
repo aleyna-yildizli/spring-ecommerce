@@ -7,22 +7,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.Instant;
+
+
+//Interceptor-> @ControllerAdvice ile Bir problem anında akışı keser
 @Slf4j
 @AllArgsConstructor
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleException(EcommerceException exception) {
-        log.error("EcommerceException occured! Exception details: ", exception.getLocalizedMessage());
-        ErrorResponse errorResponse = new ErrorResponse(exception.getLocalizedMessage());
-        return new ResponseEntity<>(errorResponse, exception.getHttpStatus());
+    public ResponseEntity<ErrorResponse> handleException(EcommerceException ecommerceexception) {
+        ErrorResponse errorResponse = new ErrorResponse(ecommerceexception.getMessage(),
+                Instant.now());
+        return new ResponseEntity<>(errorResponse, ecommerceexception.getHttpStatus());
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleException(Exception exception) {
-        log.error("Unknown exception occured! Exception details: ", exception);
-       ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
-       return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        ErrorResponse errorResponse = new ErrorResponse(exception.getMessage(),
+                Instant.now());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
 }
