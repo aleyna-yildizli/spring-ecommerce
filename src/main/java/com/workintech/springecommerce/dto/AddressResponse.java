@@ -2,5 +2,16 @@ package com.workintech.springecommerce.dto;
 
 import com.workintech.springecommerce.entity.user.Address;
 
-public record AddressResponse (Long user_id, Address address ){
+public record AddressResponse(
+        Long id,
+        Long user_id,
+        String name,
+        String surname,
+        String city,
+        String district,
+        String neighborhood,
+        String address,
+        String title,
+        String phone
+) {
 }

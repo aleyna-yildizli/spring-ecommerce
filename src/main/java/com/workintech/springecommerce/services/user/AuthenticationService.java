@@ -64,11 +64,11 @@ public class AuthenticationService {
 
         if (authentication.isAuthenticated()) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            User user = userRepository.findUserByEmail(email).orElseThrow();
+            User user = userRepository.findUserByEmail(email).orElseThrow(() -> new EcommerceException("User not found", HttpStatus.NOT_FOUND));
             Role userRole = user.getRoles().iterator().next(); // Kullanıcının ilk rolünü alıyoruz
             return new LoginResponse(user.getEmail(), user.getName(), userRole.getId().toString());
         } else {
-            throw new EcommerceException("Invalid login attempt", HttpStatus.UNAUTHORIZED); //geçersiz login
+            throw new EcommerceException("Invalid login attempt", HttpStatus.UNAUTHORIZED);
         }
     }
 }

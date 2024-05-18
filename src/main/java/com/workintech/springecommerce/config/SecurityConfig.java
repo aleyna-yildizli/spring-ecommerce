@@ -1,6 +1,5 @@
 package com.workintech.springecommerce.config;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -22,17 +21,17 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import java.util.Arrays;
 import java.util.List;
 
-//authentication-> login status code: 401 ise authentication
-//authorization-> yetkilendirme-rol based status code 403
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 public class SecurityConfig {
     @Bean
-    public PasswordEncoder passwordEncoder(){ //parolayı encode etmek için
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authManager(UserDetailsService userDetailsService){ //securityi databaseden yapmak için
+    public AuthenticationManager authManager(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
@@ -40,32 +39,34 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(){
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        corsConfiguration.setAllowedHeaders(Arrays.asList(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE));
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors().configurationSource(corsConfigurationSource());
-        return httpSecurity.csrf(AbstractHttpConfigurer::disable)
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/signup/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET,"/roles/**").permitAll();
-                    auth.requestMatchers(HttpMethod.POST,"/login/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET,"/categories/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET,"/products/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET,"/user/address**").permitAll();
-                    auth.requestMatchers(HttpMethod.POST,"/user/address**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/roles/**").permitAll();
+                    auth.requestMatchers(HttpMethod.POST, "/login/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/categories/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/products/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/user/address**").authenticated();
+                    auth.requestMatchers(HttpMethod.POST, "/user/address**").authenticated();
                     auth.requestMatchers("/css/**", "/js/**", "/images/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
-                .httpBasic(Customizer.withDefaults())
-                .build();
+                .httpBasic(withDefaults());
+        return http.build();
     }
 }

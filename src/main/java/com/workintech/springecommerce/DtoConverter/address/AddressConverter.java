@@ -1,5 +1,6 @@
 package com.workintech.springecommerce.DtoConverter.address;
 
+import com.workintech.springecommerce.dto.AddressRequest;
 import com.workintech.springecommerce.dto.AddressResponse;
 import com.workintech.springecommerce.entity.user.Address;
 import com.workintech.springecommerce.entity.user.User;
@@ -9,15 +10,33 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AddressConverter {
-    public static AddressResponse toAddressResponse(User user, Address address) {
-        return new AddressResponse(user.getId(), address);
+
+    public static AddressResponse toAddressResponse(Address address, Long user_id) {
+        return new AddressResponse(
+                address.getId(),
+                user_id,
+                address.getName(),
+                address.getSurname(),
+                address.getCity(),
+                address.getDistrict(),
+                address.getNeighborhood(),
+                address.getAddress(),
+                address.getTitle(),
+                address.getPhone()
+        );
     }
 
-    public static List<AddressResponse> toAddressResponseList(User user, List<Address> addresses) {
-        List<AddressResponse> addressResponses = new ArrayList<>();
-        for (Address address : addresses) {
-            addressResponses.add(new AddressResponse(user.getId(), address));
-        }
-        return addressResponses;
+    public static Address convertToAddressEntity(AddressRequest addressRequest) {
+        return new Address(
+                null, // ID null olarak ayarlanacak, çünkü bu yeni bir kayıttır
+                addressRequest.name(),
+                addressRequest.surname(),
+                addressRequest.city(),
+                addressRequest.district(),
+                addressRequest.neighborhood(),
+                addressRequest.address(),
+                addressRequest.title(),
+                addressRequest.phone()
+        );
     }
 }

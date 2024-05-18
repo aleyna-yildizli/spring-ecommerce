@@ -13,6 +13,6 @@ public interface AddressService {
 
     List<AddressResponse> getAllAddress(User user);
 
-    Address save(User user, Address address);
+    Address save(User user, AddressRequest addressRequest);
 
 }

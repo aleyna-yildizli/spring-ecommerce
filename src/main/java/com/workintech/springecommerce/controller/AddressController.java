@@ -1,40 +1,40 @@
 package com.workintech.springecommerce.controller;
 
+import com.workintech.springecommerce.dto.AddressRequest;
 import com.workintech.springecommerce.dto.AddressResponse;
-import com.workintech.springecommerce.entity.user.Address;
 import com.workintech.springecommerce.entity.user.User;
-
 import com.workintech.springecommerce.services.user.AddressService;
-import com.workintech.springecommerce.services.user.UserService;
-import jakarta.validation.Valid;
 
-import org.springframework.http.HttpStatus;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/user/address")
+@AllArgsConstructor
 public class AddressController {
-    private AddressService addressService;
-    private UserService userService;
-
-    public AddressController(AddressService addressService, UserService userService) {
-        this.addressService = addressService;
-        this.userService = userService;
-    }
+    private final AddressService addressService;
 
     @GetMapping
-    public List<AddressResponse> getAllAddresses( User user) {
-        return addressService.getAllAddress(user);
+    public ResponseEntity<List<AddressResponse>> getAllAddresses(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(401).body(null);
+        }
+        List<AddressResponse> addresses = addressService.getAllAddress(user);
+        return ResponseEntity.ok(addresses);
     }
 
     @PostMapping
-    public ResponseEntity<Address> addAddress( User user, @RequestBody @Valid Address address) {
-        Address savedAddress = addressService.save(user, address);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedAddress);
+    public ResponseEntity<List<AddressResponse>> addAddress(@AuthenticationPrincipal User user, @RequestBody AddressRequest addressRequest) {
+        if (user == null) {
+            return ResponseEntity.status(401).body(null);
+        }
+        addressService.save(user, addressRequest);
+        List<AddressResponse> addresses = addressService.getAllAddress(user);
+        return ResponseEntity.status(200).body(addresses);
     }
 
 }

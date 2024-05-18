@@ -43,8 +43,8 @@ public class Address {
     @Column(name = "neighborhood")
     private String neighborhood;
 
-    @NotBlank(message = "Address must not be null, empty or blank")
-    @Size(min = 3, max = 50, message = "Address must be between 3 and 50 characters")
+
+    @Size(min = 3, max = 100, message = "Address must be between 3 and 100 characters")
     @Column(name = "address")
     private String address;
 
@@ -57,4 +57,5 @@ public class Address {
     @Size(min = 3, max = 20, message = "Phone must be between 3 and 20 characters")
     @Column(name = "phone")
     private String phone;
+
 }
