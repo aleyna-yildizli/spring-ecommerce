@@ -4,9 +4,11 @@ import com.workintech.springecommerce.dto.AddressRequest;
 import com.workintech.springecommerce.dto.AddressResponse;
 import com.workintech.springecommerce.entity.user.Address;
 import com.workintech.springecommerce.entity.user.User;
+import com.workintech.springecommerce.exceptions.EcommerceException;
 import com.workintech.springecommerce.services.user.AddressService;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -20,20 +22,22 @@ import java.util.Optional;
 public class AddressController {
     private final AddressService addressService;
 
+    private void verifyUser(User user) {
+        if (user == null) {
+            throw new EcommerceException("User is not authenticated", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<AddressResponse>> getAllAddresses(@AuthenticationPrincipal User user) {
-        if (user == null) {
-            return ResponseEntity.status(401).body(null);
-        }
+        verifyUser(user);
         List<AddressResponse> addresses = addressService.getAllAddress(user);
         return ResponseEntity.ok(addresses);
     }
 
     @PostMapping
     public ResponseEntity<List<AddressResponse>> addAddress(@AuthenticationPrincipal User user, @RequestBody AddressRequest addressRequest) {
-        if (user == null) {
-            return ResponseEntity.status(401).body(null);
-        }
+        verifyUser(user);
         addressService.save(user, addressRequest);
         List<AddressResponse> addresses = addressService.getAllAddress(user);
         return ResponseEntity.status(200).body(addresses);
@@ -42,32 +46,30 @@ public class AddressController {
 
     @PutMapping
     public ResponseEntity<AddressResponse> updateAddress(@AuthenticationPrincipal User user, @RequestBody AddressRequest addressRequest) {
-        if (user == null) {
-            return ResponseEntity.status(401).body(null);
-        }
+        verifyUser(user);
         AddressResponse updatedAddress = addressService.update(user, addressRequest);
         if (updatedAddress != null) {
             return ResponseEntity.ok(updatedAddress);
         } else {
-            return ResponseEntity.status(404).body(null);  // Or appropriate status code if the address is not found or doesn't belong to the user
+            throw new EcommerceException("Address not found or doesn't belong to the user", HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAddress(@AuthenticationPrincipal User user, @PathVariable Long id) {
-        if (user == null) {
-            return ResponseEntity.status(401).build();
-        }
+        verifyUser(user);
         Optional<Address> address = addressService.findById(id);
         if (address.isEmpty() || !user.getAddresses().contains(address.get())) {
-            return ResponseEntity.status(404).build();
+            throw new EcommerceException("Address not found or doesn't belong to the user", HttpStatus.NOT_FOUND);
         }
         boolean isDeleted = addressService.delete(user, id);
         if (isDeleted) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.status(204).build(); // HTTP 204 No Content
         } else {
-            return ResponseEntity.status(500).build();
+            throw new EcommerceException("Failed to delete the address", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 }
+
+//kullanıcı kimliğini doğrulamak için -> @AuthenticationPrincipal

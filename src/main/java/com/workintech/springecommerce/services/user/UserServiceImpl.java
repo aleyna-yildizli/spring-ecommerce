@@ -8,6 +8,7 @@ import com.workintech.springecommerce.entity.user.User;
 import com.workintech.springecommerce.exceptions.EcommerceException;
 import com.workintech.springecommerce.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private AddressService addressService;
 
+    @Autowired
     public UserServiceImpl(UserRepository userRepository, AddressService addressService) {
         this.userRepository = userRepository;
         this.addressService = addressService;
@@ -34,5 +36,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         return userRepository.save(user);
+    }
+
+    @Override
+    public User verifyUser(Long userId) {
+        return findById(userId);
     }
 }
