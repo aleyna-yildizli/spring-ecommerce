@@ -3,11 +3,6 @@ package com.workintech.springecommerce.DtoConverter.address;
 import com.workintech.springecommerce.dto.AddressRequest;
 import com.workintech.springecommerce.dto.AddressResponse;
 import com.workintech.springecommerce.entity.user.Address;
-import com.workintech.springecommerce.entity.user.User;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class AddressConverter {
 
@@ -28,7 +23,7 @@ public class AddressConverter {
 
     public static Address convertToAddressEntity(AddressRequest addressRequest) {
         return new Address(
-                null, // ID null olarak ayarlanacak, çünkü bu yeni bir kayıttır
+                addressRequest.id(),
                 addressRequest.name(),
                 addressRequest.surname(),
                 addressRequest.city(),

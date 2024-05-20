@@ -47,4 +47,37 @@ public class AddressServiceImpl implements AddressService {
         userService.save(user);  // Sonra kullanıcıyı kaydediyoruz
         return address;
     }
+
+    @Override
+    public AddressResponse update(User user, AddressRequest addressRequest) {
+        Optional<Address> optionalAddress = addressRepository.findById(addressRequest.id());
+        if (optionalAddress.isPresent() && user.getAddresses().contains(optionalAddress.get())) {
+            Address address = optionalAddress.get();
+            address.setName(addressRequest.name());
+            address.setSurname(addressRequest.surname());
+            address.setCity(addressRequest.city());
+            address.setDistrict(addressRequest.district());
+            address.setNeighborhood(addressRequest.neighborhood());
+            address.setAddress(addressRequest.address());
+            address.setTitle(addressRequest.title());
+            address.setPhone(addressRequest.phone());
+
+            Address updatedAddress = addressRepository.save(address);
+            return AddressConverter.toAddressResponse(updatedAddress, user.getId());
+        }
+        return null;  // Or you can throw an exception if the address is not found or doesn't belong to the user
+    }
+
+    @Override
+    public boolean delete(User user, Long addressId) {
+        Optional<Address> optionalAddress = addressRepository.findById(addressId);
+        if (optionalAddress.isPresent() && user.getAddresses().contains(optionalAddress.get())) {
+            Address address = optionalAddress.get();
+            user.getAddresses().remove(address); // Kullanıcının adres listesinden çıkar
+            userService.save(user);  // Kullanıcıyı güncelle ve kaydet
+            addressRepository.delete(address); // Adresi sil
+            return true;
+        }
+        return false;  // Ya da adres bulunamazsa bir istisna fırlatabilirsiniz
+    }
 }

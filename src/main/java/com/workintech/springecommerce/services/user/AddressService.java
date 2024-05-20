@@ -15,4 +15,8 @@ public interface AddressService {
 
     Address save(User user, AddressRequest addressRequest);
 
+    AddressResponse update(User user, AddressRequest addressRequest);
+
+    boolean delete(User user, Long addressId);
+
 }
