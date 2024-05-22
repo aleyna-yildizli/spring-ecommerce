@@ -1,10 +1,7 @@
 package com.workintech.springecommerce.entity.user;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,6 +28,7 @@ public class User implements UserDetails {
     private String name;
 
     @Column(name="email")
+    @Email(message = "Email should be valid")
     @NotBlank(message = "Email must not be null, empty or blank")
     @Size(min=10, max=50, message="Length of email must be between 10 and 50 characters")
     private String email;
@@ -41,15 +39,15 @@ public class User implements UserDetails {
     @Size(min = 8, max=100, message = "Length of password must be between 8 and 100 characters")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER) //userla birlikte rolleri de getirmek için
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="user_role", schema="ecommerce",    // Rollere göre yetkilendirmek için
             joinColumns = @JoinColumn(name="user_id"),
             inverseJoinColumns = @JoinColumn(name="role_id"))
     private Set<Role> roles = new HashSet<>();
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name="user_addresses", schema="ecommerce",
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinTable(name="user_address", schema="ecommerce",
             joinColumns = @JoinColumn(name="user_id"),
             inverseJoinColumns = @JoinColumn(name="address_id"))
     private Set<Address> addresses = new HashSet<>();

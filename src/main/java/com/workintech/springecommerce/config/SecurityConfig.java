@@ -3,11 +3,9 @@ package com.workintech.springecommerce.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +36,7 @@ public class SecurityConfig {
         return new ProviderManager(provider);
     }
 
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -57,14 +56,11 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/signup/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/roles/**").permitAll();
-                    auth.requestMatchers(HttpMethod.POST, "/login/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/categories/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/products/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/user/address**").authenticated();
-                    auth.requestMatchers(HttpMethod.POST, "/user/address**").authenticated();
-                    auth.requestMatchers(HttpMethod.PUT, "/user/address**").authenticated();
-                    auth.requestMatchers(HttpMethod.DELETE, "/user/address**").authenticated();
+                    auth.requestMatchers("/roles/**").permitAll();
+                    auth.requestMatchers("/login/**").permitAll();
+                    auth.requestMatchers("/categories/**").permitAll();
+                    auth.requestMatchers("/products/**").permitAll();
+                    auth.requestMatchers("/user/address**").authenticated();
                     auth.requestMatchers("/css/**", "/js/**", "/images/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
@@ -72,3 +68,5 @@ public class SecurityConfig {
         return http.build();
     }
 }
+
+

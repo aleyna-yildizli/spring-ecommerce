@@ -6,7 +6,6 @@ import com.workintech.springecommerce.dto.AddressResponse;
 import com.workintech.springecommerce.entity.user.Address;
 import com.workintech.springecommerce.entity.user.User;
 import com.workintech.springecommerce.repository.user.AddressRepository;
-import lombok.AllArgsConstructor;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -18,8 +17,8 @@ import java.util.stream.Collectors;
 @Service
 public class AddressServiceImpl implements AddressService {
 
-    public  AddressRepository addressRepository;
-    private  UserService userService;
+    public AddressRepository addressRepository;
+    private UserService userService;
 
     public AddressServiceImpl(AddressRepository addressRepository, @Lazy UserService userService) {
         this.addressRepository = addressRepository;

@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -34,12 +37,12 @@ public class Address {
     private String city;
 
     @NotBlank(message = "District must not be null, empty or blank")
-    @Size(min = 3, max = 30, message = "District must be between 3 and 50 characters")
+    @Size(min = 3, max = 30, message = "District must be between 3 and 30 characters")
     @Column(name = "district")
     private String district;
 
     @NotBlank(message = "Neighborhood must not be null, empty or blank")
-    @Size(min = 3, max = 30, message = "Neighborhood must be between 3 and 50 characters")
+    @Size(min = 3, max = 30, message = "Neighborhood must be between 3 and 30 characters")
     @Column(name = "neighborhood")
     private String neighborhood;
 
@@ -57,5 +60,6 @@ public class Address {
     @Size(min = 9, max = 20, message = "Phone must be between 3 and 10 characters")
     @Column(name = "phone")
     private String phone;
+
 
 }

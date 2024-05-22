@@ -13,5 +13,4 @@ public record AddressRequest(
         String address,
         String title,
         String phone
-) {
-}
+) {}

@@ -27,10 +27,10 @@ public class AddressController {
             throw new EcommerceException("User is not authenticated", HttpStatus.UNAUTHORIZED);
         }
     }
-
     @GetMapping
     public ResponseEntity<List<AddressResponse>> getAllAddresses(@AuthenticationPrincipal User user) {
         verifyUser(user);
+        System.out.println("Authenticated User: " + user.getEmail()); // Kullanıcıyı doğrula
         List<AddressResponse> addresses = addressService.getAllAddress(user);
         return ResponseEntity.ok(addresses);
     }
@@ -42,8 +42,6 @@ public class AddressController {
         List<AddressResponse> addresses = addressService.getAllAddress(user);
         return ResponseEntity.status(200).body(addresses);
     }
-
-
     @PutMapping
     public ResponseEntity<AddressResponse> updateAddress(@AuthenticationPrincipal User user, @RequestBody AddressRequest addressRequest) {
         verifyUser(user);
@@ -54,7 +52,6 @@ public class AddressController {
             throw new EcommerceException("Address not found or doesn't belong to the user", HttpStatus.NOT_FOUND);
         }
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAddress(@AuthenticationPrincipal User user, @PathVariable Long id) {
         verifyUser(user);

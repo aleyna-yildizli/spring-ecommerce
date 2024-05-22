@@ -1,6 +1,8 @@
 package com.workintech.springecommerce.dto;
 
 import com.workintech.springecommerce.entity.user.Address;
+import lombok.Data;
+
 
 public record AddressResponse(
         Long id,
@@ -13,5 +15,4 @@ public record AddressResponse(
         String address,
         String title,
         String phone
-) {
-}
+) {}
