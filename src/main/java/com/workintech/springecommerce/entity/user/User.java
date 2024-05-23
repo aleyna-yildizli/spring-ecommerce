@@ -1,14 +1,17 @@
 package com.workintech.springecommerce.entity.user;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,7 +22,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name = "id")
     private Long id;
 
     @NotBlank(message = "Name must not be null, empty or blank")
@@ -27,38 +30,41 @@ public class User implements UserDetails {
     @Column(name = "name")
     private String name;
 
-    @Column(name="email")
-    @Email(message = "Email should be valid")
     @NotBlank(message = "Email must not be null, empty or blank")
-    @Size(min=10, max=50, message="Length of email must be between 10 and 50 characters")
+    @Size(min = 10, max = 50, message = "Length of email must be between 10 and 50 characters")
+    @Column(name = "email")
     private String email;
 
-
-    @Column(name="password")
     @NotBlank(message = "Password must not be null, empty or blank")
-    @Size(min = 8, max=100, message = "Length of password must be between 8 and 100 characters")
+    @Size(min = 8, max = 100, message = "Length of password must be between 8 and 100 characters")
+    @Column(name = "password")
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name="user_role", schema="ecommerce",    // Rollere göre yetkilendirmek için
-            joinColumns = @JoinColumn(name="user_id"),
-            inverseJoinColumns = @JoinColumn(name="role_id"))
+    @JoinTable(
+            name = "user_role",
+            schema = "ecommerce",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     private Set<Role> roles = new HashSet<>();
 
-
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
-    @JoinTable(name="user_address", schema="ecommerce",
-            joinColumns = @JoinColumn(name="user_id"),
-            inverseJoinColumns = @JoinColumn(name="address_id"))
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_addresses",
+            schema = "ecommerce",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id")
+    )
     private Set<Address> addresses = new HashSet<>();
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
     }
+
     @Override
-    public String getPassword(){
+    public String getPassword() {
         return password;
     }
 

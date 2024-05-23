@@ -30,7 +30,7 @@ public class AddressController {
     @GetMapping
     public ResponseEntity<List<AddressResponse>> getAllAddresses(@AuthenticationPrincipal User user) {
         verifyUser(user);
-        System.out.println("Authenticated User: " + user.getEmail()); // Kullanıcıyı doğrula
+        System.out.println("Authenticated User: " + user.getEmail());
         List<AddressResponse> addresses = addressService.getAllAddress(user);
         return ResponseEntity.ok(addresses);
     }

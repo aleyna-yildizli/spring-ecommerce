@@ -57,21 +57,14 @@ public class AuthenticationService {
     }
 
     public LoginResponse authenticate(String email, String password) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password)
-        );
-        System.out.println("Authenticated user: " + authentication.getPrincipal());
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new EcommerceException("User not found", HttpStatus.NOT_FOUND));
 
-        if (authentication.isAuthenticated()) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            User user = userRepository.findUserByEmail(email).orElseThrow(() ->
-                    new EcommerceException("User not found", HttpStatus.NOT_FOUND));
-
-
-            Role userRole = user.getRoles().iterator().next(); // Kullanıcının ilk rolünü al
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            Role userRole = user.getRoles().iterator().next();   // Kullanıcının rollerinden ilkini al
             return new LoginResponse(user.getEmail(), user.getName(), userRole.getId().toString());
         } else {
-            throw new EcommerceException("Invalid login attempt", HttpStatus.UNAUTHORIZED);
+            throw new EcommerceException("Invalid email or password", HttpStatus.UNAUTHORIZED);
         }
     }
 }
