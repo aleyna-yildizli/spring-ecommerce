@@ -16,7 +16,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-
     @Override
     public User findById(Long id) {
         Optional<User> userOptional = userRepository.findById(id);

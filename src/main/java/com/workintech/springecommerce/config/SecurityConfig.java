@@ -60,7 +60,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/login/**").permitAll();
                     auth.requestMatchers("/categories/**").permitAll();
                     auth.requestMatchers("/products/**").permitAll();
-                    auth.requestMatchers("/user/address**").permitAll();
+                    auth.requestMatchers("/user/address**").authenticated();
                     auth.requestMatchers("/css/**", "/js/**", "/images/**").permitAll();
                     auth.anyRequest().authenticated();
                 })

@@ -67,4 +67,9 @@ public class AuthenticationService {
             throw new EcommerceException("Invalid email or password", HttpStatus.UNAUTHORIZED);
         }
     }
+
+    public User verifyUser(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new EcommerceException("User not found", HttpStatus.NOT_FOUND));
+    }
 }
